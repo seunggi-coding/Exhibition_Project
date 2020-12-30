@@ -1,0 +1,130 @@
+//제목 : Portable_Alarm 이 커스텀된 설정대로 작동하는 모습과 Smart Radio와의 상호작용
+//작성자 : 문승기
+//날짜 : 2020.08.16
+
+//보충 설명 : 코드를 직접 보내드리는 것보다 영상으로 촬영하여 
+//			  구현되는 모습을 설명드리는 것이 더 효율적일것 같아서
+//			  제가 작성한 코드임을 이렇게 증명하고, 영상을 촬영했습니다.
+
+
+#include <stdio.h>
+#include <string.h>
+#pragma warning(disable:4996)
+
+struct Alarm {
+	int button;				//버튼이 몇번 눌렸는지를 의미
+	char bluetooth[10];		//블루투스 연결의 성공, 실패를 의미
+	char GPS[10];			//GPS 위치를 의미
+	int device;				//블루투스 연결 가능한 디바이스의 개수
+	int police;				//출동한 경찰관 수
+} alarm;
+
+struct Radio {
+	float distance;
+	int necessary_time;
+	int people;				//스마트 라디오를 가지고 있는 경찰관 수
+	char name[10];			//경찰관 이름
+} radio;
+
+int main() {
+	radio.distance = 0;
+	alarm.device = 1;
+	alarm.button = 0;
+	alarm.police = 0;
+
+	printf(" 블루투스 연결 상태.......\t");
+	scanf("%s", alarm.bluetooth);
+	if (strcmp(alarm.bluetooth, "connected") == 0) {
+		printf("\n 연결되어 있는 기기의 개수는 %d개 입니다.\n\n", alarm.device);
+
+		for (int i = 0; i < 6; i++) {			//6번 반복한다.
+			alarm.button = rand() % 3 + 1;
+
+			if (alarm.button == 1) {
+				printf("-------------------------------------------------------------------------------\n");
+				printf(" 상황 1 : 휴대폰과 블루투스 연결이 되어 있으며 버튼을 한 번 누름\n");
+				printf(" 부가설명 : 버튼을 한 번 누르면 GPS 위치가 전송되며 파출소에 신고가 접수된다.\n");
+				printf(" 위치 정보 기록 중.........\t");
+				scanf("%s", alarm.GPS);				//문자를 제외하고 10자리 숫자 ex)123.567.89
+				printf("\n");
+				printf(" 파출소로 %s 위치가 전송되었습니다. 신고가 접수되었습니다.\n", alarm.GPS);
+				alarm.police = rand() % 4 + 1;
+				if (alarm.police % 2 == 0) {
+					printf(" 경찰관 %d명이 출동했습니다.\n", alarm.police);
+					printf("-------------------------------------------------------------------------------\n\n\n\n");
+				}
+				else {
+					printf(" 경찰관 %d명이 출동했습니다.\n", alarm.police + 1);
+					printf("-------------------------------------------------------------------------------\n\n\n\n");
+				}
+			}
+			if (alarm.button == 2) {
+				printf("-------------------------------------------------------------------------------\n");
+				printf(" 상황 2 : 휴대폰과 블루투스 연결이 되어 있으며 버튼을 두 번 누름\n");
+				printf(" 부가설명 : 버튼을 두 번 누르면 휴대용 경보기로서의 역할을 한다.\n\n");
+				printf(" 경보음이 작동합니다.\n");
+				for (int j = 0; j < 2; j++) {
+					printf(" 삐 -- 삐 -- 삐 -- 삐 -- 삐\n");
+				}
+				printf("-------------------------------------------------------------------------------\n\n\n\n");
+
+			}
+			if (alarm.button == 3) {
+				printf("-------------------------------------------------------------------------------\n");
+				printf(" 상황 3 : 휴대폰과 블루투스 연결이 되어 있으며 버튼을 세 번 누름\n");
+				printf(" 부가설명 : 버튼을 세 번 누르면 'Smart_Portable_Radio'와의 직접적인 통신으로 근처에 있는 경찰관에게 직접 신고한다.\n");
+				printf(" 위치 정보 기록 중.........\t");
+				scanf("%s", alarm.GPS);				//문자를 제외하고 10자리 숫자 ex)123.567.89
+				printf("\n");
+				printf(" 근처 스마트 무전기 사용 경찰관은 ");
+				scanf("%s", radio.name);
+
+				printf("\n 근처의 경찰관 %s에게 %s 위치가 전송되었습니다.\n 신고가 접수되었습니다.\n", radio.name, alarm.GPS);
+				alarm.police = rand() % 2 + 1;
+				radio.necessary_time = rand() % 3 + 1;
+				if (alarm.police % 2 == 0) {
+					if (radio.necessary_time == 1) {
+						radio.distance = 1;
+						printf(" 가장 가까운 파출소까지의 거리가 약 %.1fkm입니다.\n", radio.distance);
+						printf(" 도착하기까지 약 %d분의 시간이 걸립니다.\n", radio.necessary_time);
+					}
+					else if (radio.necessary_time == 2) {
+						radio.distance = 1.5;
+						printf(" 가장 가까운 파출소까지의 거리가 약 %.1fkm입니다.\n", radio.distance);
+						printf(" 도착하기까지 약 %d분의 시간이 걸립니다.\n", radio.necessary_time);
+					}
+					else if (radio.necessary_time == 3) {
+						radio.distance = 2;
+						printf(" 가장 가까운 파출소까지의 거리가 약 %.1fkm입니다.\n", radio.distance);
+						printf(" 도착하기까지 약 %d분의 시간이 걸립니다.\n", radio.necessary_time);
+					}
+					printf(" %s경찰관 외 %d명이 출동했습니다.\n", radio.name, alarm.police - 1);
+				}
+				else {
+					if (radio.necessary_time == 1) {
+						radio.distance = 1;
+						printf(" 가장 가까운 파출소까지의 거리가 %.1fkm입니다.\n", radio.distance);
+						printf(" 도착하기까지 약 %d분의 시간이 걸립니다.\n", radio.necessary_time);
+					}
+					else if (radio.necessary_time == 2) {
+						radio.distance = 1.5;
+						printf(" 가장 가까운 파출소까지의 거리가 %.1fkm입니다.\n", radio.distance);
+						printf(" 도착하기까지 약 %d분의 시간이 걸립니다.\n", radio.necessary_time);
+					}
+					else if (radio.necessary_time == 3) {
+						radio.distance = 2;
+						printf(" 가장 가까운 파출소까지의 거리가 약 %.1fkm입니다.\n", radio.distance);
+						printf(" 도착하기까지 약 %d분의 시간이 걸립니다.\n", radio.necessary_time);
+					}
+					printf(" %s경찰관 외 %d명이 출동했습니다.\n", radio.name, alarm.police);
+				}
+				printf("-------------------------------------------------------------------------------\n\n\n\n");
+			}
+		}
+	}
+	else {
+		printf(" 블루투스 연결이 되어있지 않습니다.\n");
+		printf(" 기기를 먼저 연결해주세요.\n\n");
+	}
+	return 0;
+}
